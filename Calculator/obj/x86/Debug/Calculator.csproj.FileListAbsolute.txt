@@ -1,0 +1,6 @@
+/Users/nozomi/Projects/Calculator/Calculator/bin/Debug/Calculator.exe
+/Users/nozomi/Projects/Calculator/Calculator/bin/Debug/Calculator.pdb
+/Users/nozomi/Projects/Calculator/Calculator/obj/x86/Debug/Calculator.csprojAssemblyReference.cache
+/Users/nozomi/Projects/Calculator/Calculator/obj/x86/Debug/Calculator.csproj.CoreCompileInputs.cache
+/Users/nozomi/Projects/Calculator/Calculator/obj/x86/Debug/Calculator.exe
+/Users/nozomi/Projects/Calculator/Calculator/obj/x86/Debug/Calculator.pdb
