@@ -11,6 +11,7 @@ namespace Calculator
             // 入力
             Console.WriteLine("計算式を入力してください。");
             Console.WriteLine("入力は整数もしくは演算子のみとします。");
+            Console.WriteLine("演算子：+、-、*、/");
             string token = Console.ReadLine();
 
             // 中置記法から逆ポーランド記法へ変換
@@ -20,7 +21,7 @@ namespace Calculator
             double answer = DoCalculate(queue);
 
             // 出力
-            Console.WriteLine(answer);
+            Console.WriteLine("= " + answer);
         }
 
         //---------------------------------------------------------
