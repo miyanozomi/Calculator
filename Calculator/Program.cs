@@ -1,52 +1,63 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Calculator
 {
     class Calculator
     {
+        //---------------------------------------------------------
         public void DoOperation()
         {
             // 入力
             Console.WriteLine("計算式を入力してください。");
             Console.WriteLine("入力は整数もしくは演算子のみとします。");
             string token = Console.ReadLine();
-            // 【暫定】動作確認用。あとで消す。
-            Console.WriteLine(token);
-            Console.WriteLine(token.Length);
 
-            // 中置記法変換
-            string que = ConvInfixNotationToReversePolishNotion(token);
-            Console.WriteLine(que);
+            // 中置記法から逆ポーランド記法へ変換
+            Queue<string> queue = ConvInfixNotationToReversePolishNotion(token);
 
             // 計算
+            double answer = DoCalculate(queue);
+
             // 出力
+            Console.WriteLine(answer);
         }
 
-        private string ConvInfixNotationToReversePolishNotion(string token)
+        //---------------------------------------------------------
+        private Queue<string> ConvInfixNotationToReversePolishNotion(string token)
         {
             int length = token.Length;
-            string que = null;
-            int queIndex = 0;
-            string stack = null;
-            int stackIndex = 0;
+            Queue<string> queue = new Queue<string>();
+            Stack<string> stack = new Stack<string>();
             for (int i = 0; i < length; i++)
             {
                 if (char.IsNumber(token[i]))
                 {
-                    string q = new string(token[i], 1);
-                    que = que.Insert(queIndex, q);
-                    queIndex++;
+                    string s = new string(token[i], 1);
+                    queue.Enqueue(s);
                 }
                 else if (IsOperator(token[i]))
                 {
-                    string s = new string(token[i], 1);
-                    stack = stack.Insert(stackIndex, s);
-                    stackIndex++;
-                    if (IsPriorityOperator(token[i]))
+                    string checkStr = new string(token[i], 1);
+                    if (0 == stack.Count)
                     {
-                        que = que.Insert(queIndex, stack);
-                        queIndex += stack.Length;
-                        stackIndex = 0;
+                        stack.Push(checkStr);
+                        continue;
+                    }
+
+                    if ((0 != stack.Count) &&
+                        (GetOperatorLevel(checkStr) > GetOperatorLevel(stack.Peek())))
+                    {
+                        stack.Push(checkStr);
+                    }
+                    else
+                    {
+                        while (0 != stack.Count)
+                        {
+                            string str = stack.Pop();
+                            queue.Enqueue(str);
+                        }
+                        stack.Push(checkStr);
                     }
                 }
                 else
@@ -54,8 +65,43 @@ namespace Calculator
                     continue;
                 }
             }
-            return que;
+            if (0!=stack.Count)
+            {
+                while (0 != stack.Count)
+                {
+                    string str = stack.Pop();
+                    queue.Enqueue(str);
+                }
+            }
+            return queue;
         }
+
+        //---------------------------------------------------------
+        private double DoCalculate(Queue<string> queue)
+        {
+            double answer = 0.0;
+            Queue<string> copyQueue = new Queue<string>(queue);
+            Stack<double> stack = new Stack<double>();
+            while (0 != copyQueue.Count)
+            {
+                string s = copyQueue.Dequeue();
+                if (double.TryParse(s, out double d))
+                {
+                    stack.Push(d);
+                }
+                else
+                {
+                    double arg2 = stack.Pop();
+                    double arg1 = stack.Pop();
+                    double result = Calculate(arg1, arg2, s);
+                    stack.Push(result);
+                }
+            }
+            answer = stack.Pop();
+            return answer;
+        }
+
+        //---------------------------------------------------------
         private bool IsOperator(char c)
         {
             switch ( c )
@@ -69,19 +115,45 @@ namespace Calculator
                     return false;
             }
         }
-        private bool IsPriorityOperator(char c)
+
+        //---------------------------------------------------------
+        private int GetOperatorLevel(string c)
         {
             switch (c)
             {
-                case '*':
-                case '/':
-                    return true;
+                case "*":
+                case "/":
+                    return 1;
                 default:
-                    return false;
+                    return 0;
             }
+        }
+
+        private double Calculate(double arg1, double arg2, string s)
+        {
+            double result = 0.0;
+            switch (s)
+            {
+                case "+":
+                    result = arg1 + arg2;
+                    break;
+                case "-":
+                    result = arg1 - arg2;
+                    break;
+                case "*":
+                    result = arg1 * arg2;
+                    break;
+                case "/":
+                    result = arg1 / arg2;
+                    break;
+                default:
+                    break;
+            }
+            return result;
         }
     }
 
+    //-------------------------------------------------------------
     class MainClass
     {
         public static void Main(string[] args)
